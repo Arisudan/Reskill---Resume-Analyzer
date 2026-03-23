@@ -1,0 +1,442 @@
+{
+  "role_to_skills": {
+    "general_role": [
+      "communication",
+      "problem solving",
+      "teamwork",
+      "documentation",
+      "planning",
+      "leadership",
+      "collaboration",
+      "critical thinking"
+    ],
+    "software_engineer": [
+      "python",
+      "javascript",
+      "sql",
+      "git",
+      "docker",
+      "apis",
+      "system design",
+      "testing",
+      "ci/cd",
+      "kubernetes"
+    ],
+    "data_scientist": [
+      "python",
+      "sql",
+      "machine learning",
+      "statistics",
+      "pandas",
+      "data visualization",
+      "scikit-learn",
+      "tensorflow"
+    ],
+    "product_manager": [
+      "roadmapping",
+      "stakeholder management",
+      "data analysis",
+      "agile",
+      "communication",
+      "prioritization",
+      "a/b testing"
+    ],
+    "devops_engineer": [
+      "linux",
+      "docker",
+      "kubernetes",
+      "terraform",
+      "aws",
+      "monitoring",
+      "ci/cd",
+      "scripting",
+      "prometheus"
+    ],
+    "designer": [
+      "figma",
+      "wireframing",
+      "prototyping",
+      "design systems",
+      "user research",
+      "accessibility",
+      "interaction design"
+    ],
+    "marketing": [
+      "seo",
+      "content strategy",
+      "analytics",
+      "growth hacking",
+      "email marketing",
+      "crm",
+      "campaign management"
+    ]
+  },
+  "course_map": {
+    "python": {
+      "platform": "Udemy",
+      "course": "Python Masterclass",
+      "url": "https://www.google.com/search?q=python+course",
+      "level": "Intermediate"
+    },
+    "docker": {
+      "platform": "YouTube",
+      "course": "Docker Masterclass",
+      "url": "https://www.google.com/search?q=docker+course",
+      "level": "Advanced"
+    },
+    "sql": {
+      "platform": "Coursera",
+      "course": "Sql Masterclass",
+      "url": "https://www.google.com/search?q=sql+course",
+      "level": "Beginner"
+    },
+    "javascript": {
+      "platform": "Udemy",
+      "course": "Javascript Masterclass",
+      "url": "https://www.google.com/search?q=javascript+course",
+      "level": "Intermediate"
+    },
+    "react": {
+      "platform": "YouTube",
+      "course": "React Masterclass",
+      "url": "https://www.google.com/search?q=react+course",
+      "level": "Advanced"
+    },
+    "kubernetes": {
+      "platform": "Coursera",
+      "course": "Kubernetes Masterclass",
+      "url": "https://www.google.com/search?q=kubernetes+course",
+      "level": "Beginner"
+    },
+    "terraform": {
+      "platform": "Udemy",
+      "course": "Terraform Masterclass",
+      "url": "https://www.google.com/search?q=terraform+course",
+      "level": "Intermediate"
+    },
+    "aws": {
+      "platform": "YouTube",
+      "course": "Aws Masterclass",
+      "url": "https://www.google.com/search?q=aws+course",
+      "level": "Advanced"
+    },
+    "azure": {
+      "platform": "Coursera",
+      "course": "Azure Masterclass",
+      "url": "https://www.google.com/search?q=azure+course",
+      "level": "Beginner"
+    },
+    "google cloud platform": {
+      "platform": "Udemy",
+      "course": "Google Cloud Platform Masterclass",
+      "url": "https://www.google.com/search?q=google+cloud+platform+course",
+      "level": "Intermediate"
+    },
+    "machine learning": {
+      "platform": "YouTube",
+      "course": "Machine Learning Masterclass",
+      "url": "https://www.google.com/search?q=machine+learning+course",
+      "level": "Advanced"
+    },
+    "deep learning": {
+      "platform": "Coursera",
+      "course": "Deep Learning Masterclass",
+      "url": "https://www.google.com/search?q=deep+learning+course",
+      "level": "Beginner"
+    },
+    "natural language processing": {
+      "platform": "Udemy",
+      "course": "Natural Language Processing Masterclass",
+      "url": "https://www.google.com/search?q=natural+language+processing+course",
+      "level": "Intermediate"
+    },
+    "statistics": {
+      "platform": "YouTube",
+      "course": "Statistics Masterclass",
+      "url": "https://www.google.com/search?q=statistics+course",
+      "level": "Advanced"
+    },
+    "pandas": {
+      "platform": "Coursera",
+      "course": "Pandas Masterclass",
+      "url": "https://www.google.com/search?q=pandas+course",
+      "level": "Beginner"
+    },
+    "tableau": {
+      "platform": "Udemy",
+      "course": "Tableau Masterclass",
+      "url": "https://www.google.com/search?q=tableau+course",
+      "level": "Intermediate"
+    },
+    "power bi": {
+      "platform": "YouTube",
+      "course": "Power Bi Masterclass",
+      "url": "https://www.google.com/search?q=power+bi+course",
+      "level": "Advanced"
+    },
+    "scikit-learn": {
+      "platform": "Coursera",
+      "course": "Scikit-Learn Masterclass",
+      "url": "https://www.google.com/search?q=scikit-learn+course",
+      "level": "Beginner"
+    },
+    "tensorflow": {
+      "platform": "Udemy",
+      "course": "Tensorflow Masterclass",
+      "url": "https://www.google.com/search?q=tensorflow+course",
+      "level": "Intermediate"
+    },
+    "pytorch": {
+      "platform": "YouTube",
+      "course": "Pytorch Masterclass",
+      "url": "https://www.google.com/search?q=pytorch+course",
+      "level": "Advanced"
+    },
+    "communication": {
+      "platform": "Coursera",
+      "course": "Communication Masterclass",
+      "url": "https://www.google.com/search?q=communication+course",
+      "level": "Beginner"
+    },
+    "leadership": {
+      "platform": "Udemy",
+      "course": "Leadership Masterclass",
+      "url": "https://www.google.com/search?q=leadership+course",
+      "level": "Intermediate"
+    },
+    "problem solving": {
+      "platform": "YouTube",
+      "course": "Problem Solving Masterclass",
+      "url": "https://www.google.com/search?q=problem+solving+course",
+      "level": "Advanced"
+    },
+    "stakeholder management": {
+      "platform": "Coursera",
+      "course": "Stakeholder Management Masterclass",
+      "url": "https://www.google.com/search?q=stakeholder+management+course",
+      "level": "Beginner"
+    },
+    "figma": {
+      "platform": "Udemy",
+      "course": "Figma Masterclass",
+      "url": "https://www.google.com/search?q=figma+course",
+      "level": "Intermediate"
+    },
+    "wireframing": {
+      "platform": "YouTube",
+      "course": "Wireframing Masterclass",
+      "url": "https://www.google.com/search?q=wireframing+course",
+      "level": "Advanced"
+    },
+    "prototyping": {
+      "platform": "Coursera",
+      "course": "Prototyping Masterclass",
+      "url": "https://www.google.com/search?q=prototyping+course",
+      "level": "Beginner"
+    },
+    "design systems": {
+      "platform": "Udemy",
+      "course": "Design Systems Masterclass",
+      "url": "https://www.google.com/search?q=design+systems+course",
+      "level": "Intermediate"
+    },
+    "seo": {
+      "platform": "YouTube",
+      "course": "Seo Masterclass",
+      "url": "https://www.google.com/search?q=seo+course",
+      "level": "Advanced"
+    },
+    "content strategy": {
+      "platform": "Coursera",
+      "course": "Content Strategy Masterclass",
+      "url": "https://www.google.com/search?q=content+strategy+course",
+      "level": "Beginner"
+    },
+    "analytics": {
+      "platform": "Udemy",
+      "course": "Analytics Masterclass",
+      "url": "https://www.google.com/search?q=analytics+course",
+      "level": "Intermediate"
+    },
+    "growth hacking": {
+      "platform": "YouTube",
+      "course": "Growth Hacking Masterclass",
+      "url": "https://www.google.com/search?q=growth+hacking+course",
+      "level": "Advanced"
+    },
+    "agile": {
+      "platform": "Coursera",
+      "course": "Agile Masterclass",
+      "url": "https://www.google.com/search?q=agile+course",
+      "level": "Beginner"
+    },
+    "scrum": {
+      "platform": "Udemy",
+      "course": "Scrum Masterclass",
+      "url": "https://www.google.com/search?q=scrum+course",
+      "level": "Intermediate"
+    },
+    "product management": {
+      "platform": "YouTube",
+      "course": "Product Management Masterclass",
+      "url": "https://www.google.com/search?q=product+management+course",
+      "level": "Advanced"
+    },
+    "system design": {
+      "platform": "Coursera",
+      "course": "System Design Masterclass",
+      "url": "https://www.google.com/search?q=system+design+course",
+      "level": "Beginner"
+    },
+    "microservices": {
+      "platform": "Udemy",
+      "course": "Microservices Masterclass",
+      "url": "https://www.google.com/search?q=microservices+course",
+      "level": "Intermediate"
+    },
+    "api design": {
+      "platform": "YouTube",
+      "course": "Api Design Masterclass",
+      "url": "https://www.google.com/search?q=api+design+course",
+      "level": "Advanced"
+    },
+    "testing": {
+      "platform": "Coursera",
+      "course": "Testing Masterclass",
+      "url": "https://www.google.com/search?q=testing+course",
+      "level": "Beginner"
+    },
+    "devsecops": {
+      "platform": "Udemy",
+      "course": "Devsecops Masterclass",
+      "url": "https://www.google.com/search?q=devsecops+course",
+      "level": "Intermediate"
+    },
+    "cybersecurity": {
+      "platform": "YouTube",
+      "course": "Cybersecurity Masterclass",
+      "url": "https://www.google.com/search?q=cybersecurity+course",
+      "level": "Advanced"
+    },
+    "network security": {
+      "platform": "Coursera",
+      "course": "Network Security Masterclass",
+      "url": "https://www.google.com/search?q=network+security+course",
+      "level": "Beginner"
+    },
+    "cloud security": {
+      "platform": "Udemy",
+      "course": "Cloud Security Masterclass",
+      "url": "https://www.google.com/search?q=cloud+security+course",
+      "level": "Intermediate"
+    },
+    "incident response": {
+      "platform": "YouTube",
+      "course": "Incident Response Masterclass",
+      "url": "https://www.google.com/search?q=incident+response+course",
+      "level": "Advanced"
+    },
+    "data visualization": {
+      "platform": "Coursera",
+      "course": "Data Visualization Masterclass",
+      "url": "https://www.google.com/search?q=data+visualization+course",
+      "level": "Beginner"
+    },
+    "spark": {
+      "platform": "Udemy",
+      "course": "Spark Masterclass",
+      "url": "https://www.google.com/search?q=spark+course",
+      "level": "Intermediate"
+    },
+    "airflow": {
+      "platform": "YouTube",
+      "course": "Airflow Masterclass",
+      "url": "https://www.google.com/search?q=airflow+course",
+      "level": "Advanced"
+    },
+    "etl": {
+      "platform": "Coursera",
+      "course": "Etl Masterclass",
+      "url": "https://www.google.com/search?q=etl+course",
+      "level": "Beginner"
+    },
+    "data warehousing": {
+      "platform": "Udemy",
+      "course": "Data Warehousing Masterclass",
+      "url": "https://www.google.com/search?q=data+warehousing+course",
+      "level": "Intermediate"
+    },
+    "git": {
+      "platform": "YouTube",
+      "course": "Git Masterclass",
+      "url": "https://www.google.com/search?q=git+course",
+      "level": "Advanced"
+    },
+    "ci/cd": {
+      "platform": "Coursera",
+      "course": "Ci/Cd Masterclass",
+      "url": "https://www.google.com/search?q=ci/cd+course",
+      "level": "Beginner"
+    },
+    "linux": {
+      "platform": "Udemy",
+      "course": "Linux Masterclass",
+      "url": "https://www.google.com/search?q=linux+course",
+      "level": "Intermediate"
+    },
+    "bash": {
+      "platform": "YouTube",
+      "course": "Bash Masterclass",
+      "url": "https://www.google.com/search?q=bash+course",
+      "level": "Advanced"
+    },
+    "shell scripting": {
+      "platform": "Coursera",
+      "course": "Shell Scripting Masterclass",
+      "url": "https://www.google.com/search?q=shell+scripting+course",
+      "level": "Beginner"
+    },
+    "redis": {
+      "platform": "Udemy",
+      "course": "Redis Masterclass",
+      "url": "https://www.google.com/search?q=redis+course",
+      "level": "Intermediate"
+    },
+    "mongodb": {
+      "platform": "YouTube",
+      "course": "Mongodb Masterclass",
+      "url": "https://www.google.com/search?q=mongodb+course",
+      "level": "Advanced"
+    },
+    "postgresql": {
+      "platform": "Coursera",
+      "course": "Postgresql Masterclass",
+      "url": "https://www.google.com/search?q=postgresql+course",
+      "level": "Beginner"
+    },
+    "mysql": {
+      "platform": "Udemy",
+      "course": "Mysql Masterclass",
+      "url": "https://www.google.com/search?q=mysql+course",
+      "level": "Intermediate"
+    },
+    "nosql": {
+      "platform": "YouTube",
+      "course": "Nosql Masterclass",
+      "url": "https://www.google.com/search?q=nosql+course",
+      "level": "Advanced"
+    },
+    "prompt engineering": {
+      "platform": "Coursera",
+      "course": "Prompt Engineering Masterclass",
+      "url": "https://www.google.com/search?q=prompt+engineering+course",
+      "level": "Beginner"
+    },
+    "llm fine-tuning": {
+      "platform": "Udemy",
+      "course": "Llm Fine-Tuning Masterclass",
+      "url": "https://www.google.com/search?q=llm+fine-tuning+course",
+      "level": "Intermediate"
+    }
+  }
+}

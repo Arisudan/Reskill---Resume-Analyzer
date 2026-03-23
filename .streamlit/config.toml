@@ -1,13 +1,7 @@
-[client]
-toolbarMode = "minimal"
-showSidebarNavigation = false
-
-[ui]
-hideTopBar = true
-
 [theme]
-base = "light"
-primaryColor = "#1f4b99"
-backgroundColor = "#f5f8fc"
-secondaryBackgroundColor = "#ffffff"
-textColor = "#132039"
+base = "dark"
+primaryColor = "#58A6FF"
+backgroundColor = "#0D1117"
+secondaryBackgroundColor = "#161B22"
+textColor = "#C9D1D9"
+font = "sans serif"
