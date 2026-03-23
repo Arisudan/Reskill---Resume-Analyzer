@@ -1,0 +1,52 @@
+{
+  "test_cases": [
+    {
+      "id": "backend_strong",
+      "role": "backend_developer",
+      "resume_text": "Senior Backend Engineer | 6 years | Python, SQL, Docker expertise. Led microservices architecture. Built APIs with strong testing practices. Expert in Git workflows.",
+      "expected_score_min": 90,
+      "expected_score_max": 100,
+      "description": "Strong backend resume with most skills covered"
+    },
+    {
+      "id": "frontend_moderate",
+      "role": "frontend_developer",
+      "resume_text": "Frontend Developer | React specialist. 3 years with JavaScript and HTML/CSS. Some testing experience. Learning Git.",
+      "expected_score_min": 85,
+      "expected_score_max": 95,
+      "description": "Frontend resume with strong core skills"
+    },
+    {
+      "id": "data_scientist_weak",
+      "role": "data_scientist",
+      "resume_text": "Business analyst with Excel experience. Some statistics knowledge.",
+      "expected_score_min": 20,
+      "expected_score_max": 40,
+      "description": "Weak data science resume lacking technical skills"
+    },
+    {
+      "id": "default_role",
+      "role": "project manager",
+      "resume_text": "Problem solver, built teams, managed projects.",
+      "expected_score_min": 20,
+      "expected_score_max": 35,
+      "description": "Unknown role falls back to default, partial soft skill match"
+    },
+    {
+      "id": "impact_keywords",
+      "role": "backend_developer",
+      "resume_text": "Built scalable systems. Optimized database queries. Improved performance by 40%. Shipped critical features.",
+      "expected_score_min": 20,
+      "expected_score_max": 40,
+      "description": "Strong impact keywords but limited skill mentions"
+    },
+    {
+      "id": "all_skills_listed",
+      "role": "frontend_developer",
+      "resume_text": "JavaScript, HTML, CSS, React, testing, git - all expertise levels.",
+      "expected_score_min": 85,
+      "expected_score_max": 100,
+      "description": "Perfect skill list coverage for frontend"
+    }
+  ]
+}
