@@ -215,6 +215,8 @@ def _build_pdf_report(payload: Dict) -> bytes:
 
     draw_header()
     draw_score_cards()
+    if payload.get("overall_verdict"):
+        draw_paragraph_block("Overall Verdict", str(payload.get("overall_verdict")))
     draw_paragraph_block("Target Profile", str(payload.get("target_profile", "N/A")))
     draw_paragraph_block("Narrative Feedback", str(payload.get("narrative_feedback", "")))
 
@@ -222,6 +224,9 @@ def _build_pdf_report(payload: Dict) -> bytes:
     draw_section("Critical Risks", payload.get("risks") or [], tone="danger")
     draw_section("Quick Wins", payload.get("quick_wins") or [], tone="default")
     draw_section("Missing Skills", payload.get("missing_skills") or [], tone="default")
+    draw_section("Must Fix Now", payload.get("must_fix_now") or [], tone="danger")
+    draw_section("Improve Next", payload.get("improve_next") or [], tone="default")
+    draw_section("Polish Later", payload.get("polish_later") or [], tone="success")
 
     if payload.get("missing_jd_keywords"):
         draw_section("Missing JD Keywords", payload.get("missing_jd_keywords") or [], tone="default")
@@ -257,26 +262,28 @@ def _infer_default_role_from_title(title: str) -> str:
 
 
 def _inject_theme_css(mode: str) -> None:
-    if mode == "Dark":
-        background = "radial-gradient(circle at 10% 0%, #1a2442 0%, #0d1220 60%, #0a1020 100%)"
-        panel_bg = "rgba(18, 27, 46, 0.88)"
-        panel_border = "#33466d"
-        text_color = "#eef4ff"
-        muted = "#b3c0d9"
-        title = "#9accff"
-        accent = "#4da3ff"
-        accent_2 = "#43d3b8"
-        input_bg = "#1b2b46"
+    if mode == "Night Shift":
+        background = "radial-gradient(circle at 8% 0%, #14213f 0%, #0a142b 48%, #071022 100%)"
+        panel_bg = "rgba(14, 27, 52, 0.92)"
+        panel_border = "#2b4678"
+        text_color = "#eff5ff"
+        muted = "#aabfe0"
+        title = "#8fc1ff"
+        accent = "#3d93ff"
+        accent_2 = "#1dc9a7"
+        input_bg = "#132745"
+        chip_bg = "#17345d"
     else:
-        background = "radial-gradient(circle at 12% 0%, #ffffff 0%, #f3f8ff 52%, #eef3fb 100%)"
-        panel_bg = "rgba(255, 255, 255, 0.94)"
-        panel_border = "#d4def0"
-        text_color = "#12213e"
-        muted = "#5b739a"
-        title = "#1a4ea8"
-        accent = "#2f7df5"
-        accent_2 = "#1fbca3"
-        input_bg = "#fbfdff"
+        background = "radial-gradient(circle at 6% 0%, #f8fcff 0%, #edf4ff 54%, #e7eef8 100%)"
+        panel_bg = "rgba(255, 255, 255, 0.95)"
+        panel_border = "#ccd9ef"
+        text_color = "#11233f"
+        muted = "#4e6994"
+        title = "#184b9e"
+        accent = "#2a76e8"
+        accent_2 = "#17b694"
+        input_bg = "#f9fbff"
+        chip_bg = "#eaf2ff"
 
     st.markdown(
         f"""
@@ -298,9 +305,9 @@ def _inject_theme_css(mode: str) -> None:
             height: 0;
         }}
         .block-container {{
-            max-width: 1600px;
-            padding-top: 0.6rem;
-            padding-bottom: 1.2rem;
+            max-width: 1480px;
+            padding-top: 0.75rem;
+            padding-bottom: 1.6rem;
         }}
         @keyframes fadeSlideIn {{
             from {{ opacity: 0; transform: translateY(8px); }}
@@ -319,31 +326,80 @@ def _inject_theme_css(mode: str) -> None:
         }}
         .app-title {{
             color: {title};
-            font-size: 2.25rem;
+            font-size: 2.15rem;
             font-weight: 800;
-            letter-spacing: 0.3px;
-            margin-bottom: 0.15rem;
+            letter-spacing: 0.15px;
+            margin-bottom: 0.2rem;
             animation: fadeSlideIn 0.45s ease-out;
         }}
         .app-subtitle {{
             color: {muted};
-            margin-bottom: 1rem;
-            font-size: 1.02rem;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
             animation: fadeSlideIn 0.7s ease-out;
+        }}
+        .top-note {{
+            color: {muted};
+            font-size: 0.9rem;
+            margin-bottom: 0.7rem;
         }}
         .panel {{
             border: 1px solid {panel_border};
-            border-radius: 16px;
-            padding: 1.1rem;
+            border-radius: 18px;
+            padding: 1rem 1.1rem;
             background: {panel_bg};
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.10);
+            box-shadow: 0 14px 34px rgba(10, 24, 48, 0.12);
             backdrop-filter: blur(6px);
             animation: fadeSlideIn 0.5s ease-out;
+        }}
+        .hero-strip {{
+            border-radius: 14px;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid {panel_border};
+            background: linear-gradient(130deg, {chip_bg}, {panel_bg});
+            margin-bottom: 0.65rem;
+            color: {text_color};
+            font-size: 0.92rem;
+        }}
+        .label-chip {{
+            display: inline-block;
+            border: 1px solid {panel_border};
+            background: {chip_bg};
+            color: {muted};
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.76rem;
+            margin-right: 0.35rem;
+            margin-bottom: 0.35rem;
+        }}
+        .priority-block {{
+            border: 1px solid {panel_border};
+            border-left: 4px solid {accent};
+            border-radius: 12px;
+            padding: 0.6rem 0.75rem;
+            margin-bottom: 0.55rem;
+            background: {chip_bg};
+        }}
+        .priority-title {{
+            color: {title};
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }}
+        .priority-block ul {{
+            margin: 0.1rem 0 0.1rem 1rem;
+            padding-left: 0.2rem;
+        }}
+        .priority-block li {{
+            margin-bottom: 0.25rem;
+            color: {text_color};
         }}
         [data-testid="stMetric"] {{
             background: {panel_bg};
             border: 1px solid {panel_border};
-            border-radius: 12px;
+            border-radius: 14px;
             padding: 0.7rem;
             animation: fadeSlideIn 0.55s ease-out;
         }}
@@ -370,15 +426,18 @@ def _inject_theme_css(mode: str) -> None:
             filter: brightness(1.06);
             transform: translateY(-1px);
         }}
-        [data-testid="stToggle"] {{
-            padding-top: 0.45rem;
+        [role="radiogroup"] {{
             display: flex;
             justify-content: flex-end;
+            gap: 0.4rem;
         }}
-        [data-testid="stToggle"] label {{
-            font-size: 1.25rem !important;
-            font-weight: 700;
-            animation: softPulse 2.2s infinite;
+        [role="radiogroup"] > label {{
+            border: 1px solid {panel_border};
+            border-radius: 999px;
+            padding: 0.25rem 0.6rem;
+            background: {chip_bg};
+            color: {text_color};
+            font-weight: 600;
         }}
         </style>
         """,
@@ -395,7 +454,7 @@ def main() -> None:
     )
 
     if "theme_mode" not in st.session_state:
-        st.session_state.theme_mode = "Light"
+        st.session_state.theme_mode = "Daylight"
     if "store_history" not in st.session_state:
         st.session_state.store_history = False
     if "analysis_history" not in st.session_state:
@@ -409,9 +468,19 @@ def main() -> None:
     with top_left:
         st.markdown("<div class='app-title'>Reskill - AI based Resume Analyzer</div>", unsafe_allow_html=True)
         st.markdown("<div class='app-subtitle'>Standalone resume analysis with role match and ATS scoring</div>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='top-note'>Upload your resume, align to a target role, then get prioritized fixes you can apply immediately.</div>",
+            unsafe_allow_html=True,
+        )
     with top_right:
-        dark_mode = st.toggle("☀️ / 🌙", value=st.session_state.theme_mode == "Dark")
-        st.session_state.theme_mode = "Dark" if dark_mode else "Light"
+        selected_theme = st.radio(
+            "Theme",
+            options=["Daylight", "Night Shift"],
+            index=0 if st.session_state.theme_mode == "Daylight" else 1,
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+        st.session_state.theme_mode = selected_theme
 
     _inject_theme_css(st.session_state.theme_mode)
 
@@ -561,6 +630,23 @@ def main() -> None:
                 c3.metric("Keyword Coverage", f"{result.keyword_coverage or 0}%")
                 c4.metric("Role Used", ROLE_OPTIONS.get(result.role_used, result.role_used))
 
+                st.markdown(
+                    "<div class='hero-strip'><strong>Verdict:</strong> "
+                    + str(result.overall_verdict)
+                    + "</div>",
+                    unsafe_allow_html=True,
+                )
+
+                st.markdown(
+                    "<span class='label-chip'>Target: "
+                    + str(result.target_profile)
+                    + "</span>"
+                    + "<span class='label-chip'>Confidence: "
+                    + str(result.confidence_level).upper()
+                    + "</span>",
+                    unsafe_allow_html=True,
+                )
+
                 if result.jd_match_score is not None:
                     st.metric("JD Match Score", f"{result.jd_match_score}/100")
 
@@ -597,6 +683,35 @@ def main() -> None:
                 st.markdown("### Quick Wins (Next 30 Minutes)")
                 for item in result.quick_wins:
                     st.write(f"- {item}")
+
+                if result.must_fix_now or result.improve_next or result.polish_later:
+                    st.markdown("### Priority Action Plan")
+                    if result.must_fix_now:
+                        bullets = "".join([f"<li>{item}</li>" for item in result.must_fix_now])
+                        st.markdown(
+                            "<div class='priority-block'><div class='priority-title'>Must Fix Now</div><ul>"
+                            + bullets
+                            + "</ul></div>",
+                            unsafe_allow_html=True,
+                        )
+
+                    if result.improve_next:
+                        bullets = "".join([f"<li>{item}</li>" for item in result.improve_next])
+                        st.markdown(
+                            "<div class='priority-block'><div class='priority-title'>Improve Next</div><ul>"
+                            + bullets
+                            + "</ul></div>",
+                            unsafe_allow_html=True,
+                        )
+
+                    if result.polish_later:
+                        bullets = "".join([f"<li>{item}</li>" for item in result.polish_later])
+                        st.markdown(
+                            "<div class='priority-block'><div class='priority-title'>Polish Later</div><ul>"
+                            + bullets
+                            + "</ul></div>",
+                            unsafe_allow_html=True,
+                        )
 
                 if result.missing_jd_keywords:
                     st.markdown("### Missing JD Keywords")
@@ -640,8 +755,12 @@ def main() -> None:
                     "quick_wins": result.quick_wins,
                     "narrative_feedback": result.narrative_feedback,
                     "confidence_level": result.confidence_level,
+                    "overall_verdict": result.overall_verdict,
                     "missing_skills": result.missing_skills,
                     "suggestions": result.suggestions,
+                    "must_fix_now": result.must_fix_now,
+                    "improve_next": result.improve_next,
+                    "polish_later": result.polish_later,
                     "role_used": result.role_used,
                     "target_profile": result.target_profile,
                     "truncated": result.truncated,
