@@ -262,7 +262,22 @@ def _infer_default_role_from_title(title: str) -> str:
     return "default"
 
 
-def _inject_theme_css() -> None:
+def _inject_theme_css(dark_mode: bool) -> None:
+    if dark_mode:
+        bg_main = "#0D1117"
+        bg_card = "#161B22"
+        bg_border = "#21262D"
+        text_primary = "#E6EDF3"
+        text_muted = "#7D8590"
+        text_soft = "#C9D1D9"
+    else:
+        bg_main = "#F6F8FA"
+        bg_card = "#FFFFFF"
+        bg_border = "#D0D7DE"
+        text_primary = "#1F2328"
+        text_muted = "#656D76"
+        text_soft = "#1F2328"
+
         st.markdown(
                 """
 <style>
@@ -580,6 +595,83 @@ def _inject_theme_css() -> None:
                 unsafe_allow_html=True,
         )
 
+    st.markdown(
+        f"""
+<style>
+  .stApp {{ background: {bg_main} !important; }}
+  .reskill-card {{ background: {bg_card}; border: 1px solid {bg_border}; border-radius: 10px; padding: 16px; margin-bottom: 12px; }}
+  [data-testid="metric-container"] {{ background: {bg_card} !important; border: 1px solid {bg_border} !important; border-radius: 10px !important; }}
+  .stTextInput input, .stTextArea textarea {{ background: {bg_card} !important; border: 1px solid {bg_border} !important; color: {text_primary} !important; }}
+  .stSelectbox [data-baseweb="select"] > div {{ background: {bg_card} !important; border: 1px solid {bg_border} !important; color: {text_primary} !important; }}
+  [data-testid="stFileUploadDropzone"] {{ background: {bg_card} !important; border: 2px dashed {bg_border} !important; border-radius: 10px !important; }}
+  html, body, [class*="css"], p, label, span {{ color: {text_primary} !important; }}
+  .section-label, .score-card-label, .privacy-bar, .ats-bar-label, .box-tag-weak, .box-tag-strong {{ color: {text_muted} !important; }}
+  [data-testid="stMetricValue"], h1, h2, h3 {{ color: {text_primary} !important; }}
+  [data-testid="stSidebar"] {{ background: {bg_main} !important; border-right: 1px solid {bg_border} !important; }}
+  [data-testid="stSidebar"] * {{ color: {text_soft} !important; }}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+def _render_mode_toggle() -> None:
+    st.markdown(
+        """
+<style>
+.toggle-wrap { position: fixed; top: 18px; right: 24px; z-index: 9999; }
+.toggle-pill {
+  width: 64px; height: 32px; border-radius: 16px; cursor: pointer;
+  display: flex; align-items: center; padding: 3px;
+  transition: background 0.3s; position: relative;
+}
+.toggle-pill.dark { background: #1a1f35; justify-content: flex-start; }
+.toggle-pill.light { background: #E8F4FF; border: 1.5px solid #B8D4F0; justify-content: flex-end; }
+.toggle-circle {
+  width: 26px; height: 26px; border-radius: 50%; background: white;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  transition: all 0.3s;
+}
+.toggle-pill.light .toggle-circle { background: #378ADD; }
+.toggle-emoji { font-size: 14px; position: absolute; }
+.toggle-pill.dark .toggle-emoji { right: 7px; }
+.toggle-pill.light .toggle-emoji { left: 7px; }
+</style>
+""",
+        unsafe_allow_html=True,
+    )
+
+    if st.session_state.dark_mode:
+        pill_html = """
+<div class="toggle-wrap">
+  <div class="toggle-pill dark">
+    <div class="toggle-circle"></div>
+    <span class="toggle-emoji">🌙</span>
+  </div>
+</div>
+"""
+    else:
+        pill_html = """
+<div class="toggle-wrap">
+  <div class="toggle-pill light">
+    <span class="toggle-emoji">☀️</span>
+    <div class="toggle-circle"></div>
+  </div>
+</div>
+"""
+    st.markdown(pill_html, unsafe_allow_html=True)
+
+    col_toggle = st.columns([10, 1])[1]
+    with col_toggle:
+        if st.session_state.dark_mode:
+            if st.button("🌙", key="toggle_btn", help="Switch to Light Mode"):
+                st.session_state.dark_mode = False
+                st.rerun()
+        else:
+            if st.button("☀️", key="toggle_btn", help="Switch to Dark Mode"):
+                st.session_state.dark_mode = True
+                st.rerun()
+
 
 def render_score_cards(ats_score: int | None, jd_match: int | None, impact_score: int | None, overall_score: int | None) -> None:
         def score_color(value: int | None) -> str:
@@ -707,7 +799,11 @@ def main() -> None:
         initial_sidebar_state="collapsed",
     )
 
-    _inject_theme_css()
+    if "dark_mode" not in st.session_state:
+        st.session_state.dark_mode = True
+
+    _inject_theme_css(st.session_state.dark_mode)
+    _render_mode_toggle()
 
     if "resume_text" not in st.session_state:
         st.session_state.resume_text = ""
