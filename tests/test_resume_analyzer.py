@@ -7,7 +7,7 @@ import unittest
 from pathlib import Path
 
 # Add parent to path so we can import the package
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from resume_analyzer.analyzer import analyze_resume
 from resume_analyzer.models import ResumeInput, AnalysisResult

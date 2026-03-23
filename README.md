@@ -2,12 +2,13 @@
 
 A deterministic, rule-based CLI tool and **web application** that analyzes resumes and provides:
 - **Score** (0–100) based on role-specific skills
+- **ATS Score** (0-100) for applicant tracking system compatibility
 - **Missing Skills** for target role
 - **Improvement Suggestions** with actionable guidance
 
 ## Features
 
-✅ **Web App** — Beautiful, responsive GUI (Flask-based)  
+✅ **Web App** — Streamlit app ready for GitHub-based deployment  
 ✅ **CLI** — Fast, scriptable command-line interface  
 ✅ **SDK** — Integrate into your Python projects  
 ✅ Sub-millisecond execution (<1ms per analysis)  
@@ -18,28 +19,28 @@ A deterministic, rule-based CLI tool and **web application** that analyzes resum
 ✅ Structured JSON output  
 ✅ Mobile-responsive interface  
 
-## NEW: Flask Web App 🎉
+## NEW: Streamlit Web App 🎉
 
-### Quick Start (Web)
+### Quick Start (Web - Streamlit)
 ```bash
 pip install -r requirements.txt
-python app.py
-# Open http://localhost:5000
+streamlit run streamlit_app.py
+# Open http://localhost:8501
 ```
 
 Then:
 1. Select your target role
-2. Paste your resume
-3. Get instant feedback with score, skills gap, and suggestions
+2. Upload your resume (TXT/PDF/DOCX) or paste text
+3. Get instant feedback with role score, ATS score, skills gap, and suggestions
 
-See [QUICKSTART.md](QUICKSTART.md) for all usage modes.
+See [QUICKSTART.md](docs/QUICKSTART.md) for all usage modes.
 
 ## Setup
 
 ### Requirements
 - Python 3.8+
 - **Core Analyzer**: No external dependencies (stdlib only)
-- **Web App** (optional): Flask 2.3+
+- **Web App** (optional): Streamlit 1.42+
 
 ### Installation
 
@@ -49,13 +50,13 @@ See [QUICKSTART.md](QUICKSTART.md) for all usage modes.
 python -m resume_analyzer.main input.json
 ```
 
-#### Web App (with Flask)
+#### Web App (with Streamlit)
 ```bash
-# Install Flask dependency
+# Install dependencies
 pip install -r requirements.txt
 
-# Or install manually
-pip install flask==2.3.0 werkzeug==2.3.0
+# Start Streamlit
+streamlit run streamlit_app.py
 ```
 
 ## Usage
@@ -63,21 +64,21 @@ pip install flask==2.3.0 werkzeug==2.3.0
 ### Web App (Recommended - GUI)
 
 ```bash
-# Install Flask
+# Install dependencies
 pip install -r requirements.txt
 
-# Start server
-python app.py
+# Start Streamlit app
+streamlit run streamlit_app.py
 
 # Open browser
-http://localhost:5000
+http://localhost:8501
 ```
 
 Then:
 1. Enter target role (Backend, Frontend, Data Science, or General)
-2. Paste resume text
+2. Upload resume file or paste resume text
 3. Click "Analyze Resume"
-4. View score, missing skills, and suggestions
+4. View role score, ATS score, missing skills, and suggestions
 
 ### CLI (Programmatic)
 
@@ -129,6 +130,7 @@ JSON with fields:
 ```json
 {
   "score": 75,
+  "ats_score": 72,
   "missing_skills": ["docker", "testing"],
   "suggestions": [
     "Add evidence of docker with a concrete project or impact metric.",
@@ -143,6 +145,7 @@ JSON with fields:
 
 ### Fields
 - `score`: 0–100, null if error
+- `ats_score`: 0-100, null if error
 - `missing_skills`: List of role-required skills not found
 - `suggestions`: Actionable improvement tips
 - `role_used`: Normalized role (or "default")
@@ -163,10 +166,10 @@ Example:
 
 ```bash
 # Run all tests
-python test_resume_analyzer.py
+python tests/test_resume_analyzer.py
 
 # Run with verbose output
-python -m unittest test_resume_analyzer -v
+python -m unittest tests.test_resume_analyzer -v
 ```
 
 ### Test Coverage

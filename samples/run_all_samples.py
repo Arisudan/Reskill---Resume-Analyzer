@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 # Add parent to path
-sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from resume_analyzer.analyzer import analyze_resume
 from resume_analyzer.models import ResumeInput
@@ -15,7 +15,8 @@ from resume_analyzer.output import format_result
 
 def run_samples():
     """Load and run all sample test cases."""
-    with open("samples.json", "r") as f:
+    samples_path = Path(__file__).with_name("samples.json")
+    with open(samples_path, "r", encoding="utf-8") as f:
         samples_data = json.load(f)
     
     test_cases = samples_data["test_cases"]
