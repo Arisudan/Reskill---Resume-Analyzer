@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from io import BytesIO
 from typing import Dict, List
 
@@ -15,6 +16,14 @@ from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from resume_analyzer.analyzer import analyze_resume
+from resume_analyzer.advanced_pipeline import (
+    analyze_advanced_signals,
+    build_highlighted_html,
+    map_courses_for_skills,
+    parse_resume_file,
+    suggest_jobs,
+    weighted_resume_score,
+)
 from resume_analyzer.models import ResumeInput
 from resume_analyzer.skills import ROLE_SKILLS
 
@@ -776,6 +785,94 @@ def render_empty_state() -> None:
         )
 
 
+        def render_donut_gauge(score: int | None) -> None:
+            value = max(0, min(100, int(score or 0)))
+            st.markdown(
+                f"""
+        <div style="display:flex;justify-content:center;align-items:center;margin:8px 0 16px 0;">
+          <div style="width:170px;height:170px;border-radius:50%;
+                  background:conic-gradient(#3FB950 {value*3.6}deg, #21262D 0deg);
+                  display:flex;align-items:center;justify-content:center;position:relative;">
+            <div style="width:126px;height:126px;border-radius:50%;background:#0D1117;
+                display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div style="font-size:30px;font-weight:800;color:#E6EDF3;">{value}</div>
+              <div style="font-size:11px;color:#7D8590;letter-spacing:1px;text-transform:uppercase;">Overall</div>
+            </div>
+          </div>
+        </div>
+        """,
+                unsafe_allow_html=True,
+            )
+
+
+        def render_recommendation_cards(title: str, entries: List[Dict[str, str]]) -> None:
+            st.markdown(f"### {title}")
+            for entry in entries:
+                st.markdown(
+                    "<div class='reskill-card' style='padding:12px 14px;'>"
+                    + f"<div style='font-size:13px;font-weight:700;color:#E6EDF3;'>{entry.get('title', 'Recommendation')}</div>"
+                    + f"<div style='font-size:11px;color:#7D8590;margin:4px 0 8px;'>Platform: {entry.get('platform', 'N/A')}</div>"
+                    + f"<a href='{entry.get('url', '#')}' target='_blank' style='font-size:12px;color:#58A6FF;text-decoration:none;'>Open Link</a>"
+                    + "</div>",
+                    unsafe_allow_html=True,
+                )
+
+
+        @st.cache_data(ttl=3600, show_spinner=False)
+        def gemini_enhance_cached(api_key: str, resume_text: str, job_description: str, weak_bullets: tuple[str, ...]) -> Dict[str, str]:
+            if not api_key:
+                return {
+                    "summary": "",
+                    "rewrite": "",
+                    "section_tips": "",
+                    "error": "Missing GEMINI_API_KEY",
+                }
+
+            try:
+                import google.generativeai as genai  # type: ignore
+
+                genai.configure(api_key=api_key)
+                model = genai.GenerativeModel("gemini-1.5-flash")
+
+                weak_text = "\n".join(weak_bullets[:3]) if weak_bullets else "No explicit weak bullets detected."
+                prompt = (
+                    "You are a resume coach. Return concise plain text sections with headings SUMMARY, REWRITE, TIPS.\n"
+                    f"Resume:\n{resume_text[:5000]}\n\n"
+                    f"Job description:\n{job_description[:2500]}\n\n"
+                    f"Weak bullets:\n{weak_text}\n"
+                )
+                response = model.generate_content(prompt)
+                text = (response.text or "").strip()
+
+                summary = ""
+                rewrite = ""
+                tips = ""
+                if "REWRITE" in text:
+                    parts = text.split("REWRITE", 1)
+                    summary = parts[0].replace("SUMMARY", "").strip()
+                    rest = parts[1]
+                    if "TIPS" in rest:
+                        rewrite, tips = rest.split("TIPS", 1)
+                    else:
+                        rewrite = rest
+                else:
+                    summary = text
+
+                return {
+                    "summary": summary.strip(),
+                    "rewrite": rewrite.strip(),
+                    "section_tips": tips.strip(),
+                    "error": "",
+                }
+            except Exception as exc:
+                return {
+                    "summary": "",
+                    "rewrite": "",
+                    "section_tips": "",
+                    "error": f"Gemini unavailable: {exc}",
+                }
+
+
 def main() -> None:
     st.set_page_config(
         page_title="Reskill - AI based Resume Analyzer",
@@ -796,6 +893,12 @@ def main() -> None:
         st.session_state.analysis_done = False
     if "analysis_result" not in st.session_state:
         st.session_state.analysis_result = None
+    if "advanced_signals" not in st.session_state:
+        st.session_state.advanced_signals = None
+    if "weighted_score" not in st.session_state:
+        st.session_state.weighted_score = None
+    if "ai_enhancements" not in st.session_state:
+        st.session_state.ai_enhancements = None
 
     st.markdown(
         """
@@ -893,11 +996,17 @@ def main() -> None:
 
         if uploaded_file is not None:
             extracted = _extract_text_from_uploaded_file(uploaded_file)
-            if extracted:
+            parsed = parse_resume_file(uploaded_file.name, uploaded_file.getvalue())
+            extracted = parsed.text or extracted
+            if extracted.strip():
                 st.session_state.resume_text = extracted
                 st.success(f"Loaded text from {uploaded_file.name}")
+                st.toast("Resume parsed successfully", icon="✅")
+                if parsed.parse_notes:
+                    st.caption("Parser notes: " + " | ".join(parsed.parse_notes[:2]))
             else:
                 st.error("Could not extract text from the uploaded file.")
+                st.toast("Unable to parse resume file", icon="⚠️")
 
         resume_text = st.text_area(
             "Resume Text",
@@ -930,8 +1039,36 @@ def main() -> None:
                             job_description=jd_text,
                         )
                     )
+                    advanced = analyze_advanced_signals(
+                        text=resume_text,
+                        role_used=result.role_used,
+                        job_description=jd_text,
+                    )
+                    weighted = weighted_resume_score(
+                        contact=advanced.contact_completeness,
+                        sections=advanced.sections,
+                        matched_skills=advanced.matched_skills,
+                        missing_skills=advanced.missing_skills,
+                        weak_count=len(advanced.weak_bullets),
+                        with_metrics=advanced.bullets_with_metrics,
+                        ats_flags=advanced.ats_flags,
+                        jd_similarity=advanced.jd_similarity,
+                    )
+
+                    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+                    ai_enh = gemini_enhance_cached(
+                        api_key=api_key,
+                        resume_text=resume_text,
+                        job_description=jd_text,
+                        weak_bullets=tuple(advanced.weak_bullets),
+                    )
+
                     st.session_state.analysis_result = result
+                    st.session_state.advanced_signals = advanced
+                    st.session_state.weighted_score = weighted
+                    st.session_state.ai_enhancements = ai_enh
                     st.session_state["analysis_done"] = True
+                    st.toast("Analysis complete", icon="✅")
         st.markdown('</div>', unsafe_allow_html=True)
 
     with col_results:
@@ -945,13 +1082,18 @@ def main() -> None:
             return
 
         result = st.session_state.analysis_result
+        advanced = st.session_state.advanced_signals
+        weighted = st.session_state.weighted_score
+        ai_enh = st.session_state.ai_enhancements or {}
         if result.error:
             st.warning(result.error)
             st.markdown('</div>', unsafe_allow_html=True)
             return
 
         impact_score = result.section_scores.get("impact", 0)
-        render_score_cards(result.ats_score, result.jd_match_score, impact_score, result.score)
+        overall_score = weighted.total if weighted is not None else result.score
+        render_score_cards(result.ats_score, result.jd_match_score, impact_score, overall_score)
+        render_donut_gauge(overall_score)
 
         st.markdown(f"### Verdict: {_score_badge(result.score)}")
         st.caption(f"{result.overall_verdict} | Confidence: {str(result.confidence_level).upper()}")
@@ -963,22 +1105,46 @@ def main() -> None:
             "Section Headers": int(result.section_scores.get("ats_compatibility", 0)),
             "Readability": int(result.section_scores.get("relevance", 0)),
         }
+        if advanced is not None:
+            ats_rows["Formatting"] = max(0, 100 - (len(advanced.ats_flags) * 20))
         st.markdown("### ATS Breakdown")
         render_ats_bars(ats_rows)
+
+        if advanced is not None and advanced.ats_flags:
+            st.warning("ATS alerts: " + " | ".join(advanced.ats_flags[:3]))
 
         required_skills = ROLE_SKILLS.get(result.role_used, [])
         matched_skills = [skill for skill in required_skills if skill not in result.missing_skills]
         partial_keywords = list(result.missing_jd_keywords[:4]) if result.missing_jd_keywords else []
+        if advanced is not None:
+            matched_skills = advanced.matched_skills
+            partial_keywords = [kw for kw in advanced.missing_skills if kw not in result.missing_skills][:4]
         st.markdown("### Role Keyword Signals")
         render_keywords(matched_skills, result.missing_skills, partial_keywords)
+
+        st.markdown("### Skills Strength Chart")
+        chart_data = {
+            "Matched": len(matched_skills),
+            "Missing": len(result.missing_skills),
+            "Weak Bullets": len(advanced.weak_bullets) if advanced else 0,
+            "Strong Bullets": len(advanced.strong_bullets) if advanced else 0,
+        }
+        st.bar_chart(chart_data)
 
         st.markdown("### Resume Improvements")
         rewrites = list(result.rewrite_guidance or [])
         base_suggestions = list(result.suggestions or [])
 
+        weak_bullets = list(advanced.weak_bullets) if advanced else []
+        strong_bullets = list(advanced.strong_bullets) if advanced else []
+
         for idx, suggestion in enumerate(base_suggestions[:6], start=1):
             weak_text = "Generic resume statement without impact or role relevance."
             strong_text = "Action-driven bullet with clear scope, tools, and quantified outcome."
+            if idx - 1 < len(weak_bullets):
+                weak_text = weak_bullets[idx - 1]
+            if idx - 1 < len(strong_bullets):
+                strong_text = strong_bullets[idx - 1]
             if rewrites:
                 rewrite = rewrites[(idx - 1) % len(rewrites)]
                 if "Before:" in rewrite and "After:" in rewrite:
@@ -991,6 +1157,36 @@ def main() -> None:
                 weak=weak_text,
                 strong=strong_text,
             )
+
+        st.markdown("### Live Resume Preview")
+        if advanced is not None:
+            st.markdown(
+                build_highlighted_html(
+                    text=resume_text,
+                    matched_skills=advanced.matched_skills,
+                    missing_skills=advanced.missing_skills,
+                ),
+                unsafe_allow_html=True,
+            )
+
+        if ai_enh.get("summary") or ai_enh.get("rewrite") or ai_enh.get("section_tips"):
+            st.markdown("### AI Enhancements (Gemini)")
+            if ai_enh.get("summary"):
+                st.markdown("**Professional Summary Draft**")
+                st.write(ai_enh.get("summary"))
+            if ai_enh.get("rewrite"):
+                st.markdown("**STAR Bullet Rewrite Suggestions**")
+                st.write(ai_enh.get("rewrite"))
+            if ai_enh.get("section_tips"):
+                st.markdown("**Section-by-Section Improvements**")
+                st.write(ai_enh.get("section_tips"))
+        elif ai_enh.get("error"):
+            st.info(ai_enh.get("error"))
+
+        course_cards = map_courses_for_skills(result.missing_skills)
+        job_cards = suggest_jobs(result.role_used, industry)
+        render_recommendation_cards("Course Recommendations", course_cards)
+        render_recommendation_cards("Job Recommendations", job_cards)
 
         payload = {
             "score": result.score,
