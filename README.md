@@ -32,7 +32,7 @@ Then:
 2. Paste your resume
 3. Get instant feedback with score, skills gap, and suggestions
 
-See [QUICKSTART.md](QUICKSTART.md) for all usage modes.
+See [Quickstart Guide](docs/QUICKSTART.md) for all usage modes.
 
 ## Setup
 

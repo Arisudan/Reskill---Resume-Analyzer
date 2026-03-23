@@ -15,7 +15,8 @@ from resume_analyzer.output import format_result
 
 def run_samples():
     """Load and run all sample test cases."""
-    with open("samples.json", "r") as f:
+    samples_path = Path(__file__).parent / "samples" / "samples.json"
+    with open(samples_path, "r", encoding="utf-8") as f:
         samples_data = json.load(f)
     
     test_cases = samples_data["test_cases"]
