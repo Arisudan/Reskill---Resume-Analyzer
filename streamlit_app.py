@@ -283,18 +283,20 @@ def _inject_theme_css(dark_mode: bool) -> None:
 <style>
     /* -- Reset Streamlit defaults -- */
     #MainMenu, footer, header { visibility: hidden; }
-    .block-container { padding: 1.5rem 2rem !important; max-width: 100% !important; }
+    .block-container { padding: 1.2rem 1.6rem 2rem 1.6rem !important; max-width: 1400px !important; }
     .stApp { background: #0D1117 !important; }
 
     /* -- Typography -- */
     html, body, [class*="css"] {
         font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
         color: #C9D1D9;
+        font-size: 14px;
+        line-height: 1.45;
     }
-    h1 { font-size: 22px !important; font-weight: 800 !important; color: #58A6FF !important; letter-spacing: 0.3px; }
-    h2 { font-size: 16px !important; font-weight: 700 !important; color: #E6EDF3 !important; }
-    h3 { font-size: 13px !important; font-weight: 600 !important; color: #C9D1D9 !important; }
-    p, label, span, div { color: #C9D1D9; }
+    h1 { font-size: 28px !important; font-weight: 800 !important; color: #58A6FF !important; letter-spacing: 0.2px; }
+    h2 { font-size: 20px !important; font-weight: 700 !important; color: #E6EDF3 !important; }
+    h3 { font-size: 16px !important; font-weight: 600 !important; color: #C9D1D9 !important; }
+    p, label, span, div { color: #C9D1D9; font-size: 14px; }
 
     /* -- Topbar / App header area -- */
     .app-topbar {
@@ -305,12 +307,12 @@ def _inject_theme_css(dark_mode: bool) -> None:
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 20px;
+        margin-bottom: 14px;
     }
 
     /* -- Section labels -- */
     .section-label {
-        font-size: 10px !important;
+        font-size: 11px !important;
         font-weight: 700 !important;
         letter-spacing: 1.2px !important;
         color: #7D8590 !important;
@@ -322,9 +324,10 @@ def _inject_theme_css(dark_mode: bool) -> None:
     .reskill-card {
         background: #161B22;
         border: 1px solid #21262D;
-        border-radius: 10px;
-        padding: 16px;
+        border-radius: 12px;
+        padding: 18px;
         margin-bottom: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
     }
 
     /* -- Metric cards (score boxes) -- */
@@ -520,6 +523,13 @@ def _inject_theme_css(dark_mode: bool) -> None:
     }
     .score-card-value.pending { color: #30363D; }
 
+    .panel-title {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #E6EDF3;
+    }
+
     /* -- Keyword pills -- */
     .kw-missing {
         display: inline-block;
@@ -590,6 +600,10 @@ def _inject_theme_css(dark_mode: bool) -> None:
     .ats-bar-fill-yellow { height: 100%; background: #E3B341; border-radius: 3px; }
     .ats-bar-fill-red { height: 100%; background: #F85149; border-radius: 3px; }
     .ats-bar-val { font-size: 11px; color: #C9D1D9; font-weight: 600; width: 32px; text-align: right; }
+
+    [data-testid="stVerticalBlock"] > div:has(> .reskill-card) {
+        width: 100%;
+    }
 </style>
 """,
                 unsafe_allow_html=True,
@@ -619,58 +633,29 @@ def _render_mode_toggle() -> None:
     st.markdown(
         """
 <style>
-.toggle-wrap { position: fixed; top: 18px; right: 24px; z-index: 9999; }
-.toggle-pill {
-  width: 64px; height: 32px; border-radius: 16px; cursor: pointer;
-  display: flex; align-items: center; padding: 3px;
-  transition: background 0.3s; position: relative;
+[data-testid="stToggle"] {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
-.toggle-pill.dark { background: #1a1f35; justify-content: flex-start; }
-.toggle-pill.light { background: #E8F4FF; border: 1.5px solid #B8D4F0; justify-content: flex-end; }
-.toggle-circle {
-  width: 26px; height: 26px; border-radius: 50%; background: white;
-  display: flex; align-items: center; justify-content: center; font-size: 13px;
-  transition: all 0.3s;
+[data-testid="stToggle"] label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
 }
-.toggle-pill.light .toggle-circle { background: #378ADD; }
-.toggle-emoji { font-size: 14px; position: absolute; }
-.toggle-pill.dark .toggle-emoji { right: 7px; }
-.toggle-pill.light .toggle-emoji { left: 7px; }
 </style>
 """,
         unsafe_allow_html=True,
     )
-
-    if st.session_state.dark_mode:
-        pill_html = """
-<div class="toggle-wrap">
-  <div class="toggle-pill dark">
-    <div class="toggle-circle"></div>
-    <span class="toggle-emoji">🌙</span>
-  </div>
-</div>
-"""
-    else:
-        pill_html = """
-<div class="toggle-wrap">
-  <div class="toggle-pill light">
-    <span class="toggle-emoji">☀️</span>
-    <div class="toggle-circle"></div>
-  </div>
-</div>
-"""
-    st.markdown(pill_html, unsafe_allow_html=True)
-
-    col_toggle = st.columns([10, 1])[1]
-    with col_toggle:
-        if st.session_state.dark_mode:
-            if st.button("🌙", key="toggle_btn", help="Switch to Light Mode"):
-                st.session_state.dark_mode = False
-                st.rerun()
-        else:
-            if st.button("☀️", key="toggle_btn", help="Switch to Dark Mode"):
-                st.session_state.dark_mode = True
-                st.rerun()
+    cols = st.columns([9, 2])
+    with cols[1]:
+        new_mode = st.toggle(
+            "Dark mode",
+            value=st.session_state.dark_mode,
+            help="Toggle theme",
+        )
+    if new_mode != st.session_state.dark_mode:
+        st.session_state.dark_mode = new_mode
+        st.rerun()
 
 
 def render_score_cards(ats_score: int | None, jd_match: int | None, impact_score: int | None, overall_score: int | None) -> None:
@@ -852,7 +837,9 @@ def main() -> None:
     col_input, col_results = st.columns([1, 1], gap="large")
 
     with col_input:
+        st.markdown('<div class="reskill-card">', unsafe_allow_html=True)
         st.markdown('<div class="section-label">Resume + Target Role Input</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Input Workspace</div>', unsafe_allow_html=True)
 
         target_title = st.text_input(
             "Target Job Title",
@@ -945,17 +932,22 @@ def main() -> None:
                     )
                     st.session_state.analysis_result = result
                     st.session_state["analysis_done"] = True
+        st.markdown('</div>', unsafe_allow_html=True)
 
     with col_results:
+        st.markdown('<div class="reskill-card">', unsafe_allow_html=True)
         st.markdown('<div class="section-label">Analysis Results</div>', unsafe_allow_html=True)
+        st.markdown('<div class="panel-title">Results Dashboard</div>', unsafe_allow_html=True)
 
         if not st.session_state.get("analysis_done", False) or st.session_state.analysis_result is None:
             render_empty_state()
+            st.markdown('</div>', unsafe_allow_html=True)
             return
 
         result = st.session_state.analysis_result
         if result.error:
             st.warning(result.error)
+            st.markdown('</div>', unsafe_allow_html=True)
             return
 
         impact_score = result.section_scores.get("impact", 0)
@@ -1033,6 +1025,7 @@ def main() -> None:
             mime="application/pdf",
             use_container_width=True,
         )
+        st.markdown('</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
