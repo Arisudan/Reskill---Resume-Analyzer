@@ -47,4 +47,5 @@ instance/
 # Environment
 .env
 .env.local
+.streamlit/secrets.toml
 *.log
